@@ -1,10 +1,15 @@
 #include <stdint.h>
 
+#define FCCF_HEAD_FLAG 0xAF
+
+typedef uint16_t (*fccf_crc_fun)(uint8_t *data, uint32_t len);
+
 typedef struct fccf_buff
 {
-    uint8_t *data;
+    uint8_t *ptr;
     uint32_t len;
 }FccfBuff;
+
 
 union fccf_ctrl_frame
 {
@@ -18,9 +23,18 @@ union fccf_ctrl_frame
     } context;
 };
 
+union fccf_head
+{
+    uint8_t buf[2];
+    struct{
+        uint8_t begin;
+        union fccf_ctrl_frame ctrl;
+    } context;
+};
+
 typedef struct fccf_pkg
 {
-    uint32_t target_addr;
+    uint32_t remote_addr;
     uint32_t host_addr;
     uint32_t user_code;
     struct fccf_buff data;
